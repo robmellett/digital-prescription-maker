@@ -2,6 +2,10 @@
 
 A little Astro + React app that lets a doctor type prescription details on the left and watch a tidy, printable prescription render on the right. Fill it in, hit **Print / Save PDF**, done.
 
+You can view live demo at:
+
+[https://prescription-maker.robmellett.dev/](https://prescription-maker.robmellett.dev/)
+
 ---
 
 ## Why on earth would you need to make your own prescription abroad?
