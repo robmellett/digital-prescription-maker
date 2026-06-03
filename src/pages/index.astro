@@ -1,0 +1,370 @@
+---
+const today = new Date().toISOString().split("T")[0];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prescription Maker</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>℞ Prescription Maker</h1>
+      <button type="button" id="print-btn" class="ghost">Print / Save PDF</button>
+    </header>
+
+    <main class="layout">
+      <!-- ── Left: input fields ───────────────────────────── -->
+      <section class="panel form-panel" aria-label="Prescription details">
+        <form id="rx-form" autocomplete="off">
+          <fieldset>
+            <legend>Prescriber</legend>
+            <label>Doctor name<input name="prescriber" placeholder="Dr Jane Smith" /></label>
+            <label>Clinic / Practice<input name="clinic" placeholder="Riverside Medical Centre" /></label>
+            <label>Address<input name="prescriberAddress" placeholder="12 Main St, Sydney NSW 2000" /></label>
+            <div class="row">
+              <label>Phone<input name="prescriberPhone" placeholder="(02) 9000 0000" /></label>
+              <label>Provider / Reg. no.<input name="providerNo" placeholder="1234567A" /></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Patient</legend>
+            <label>Full name<input name="patient" placeholder="John Citizen" /></label>
+            <div class="row">
+              <label>Date of birth<input type="date" name="dob" /></label>
+              <label>Weight (kg)<input name="weight" inputmode="decimal" placeholder="70" /></label>
+            </div>
+            <label>Address<input name="patientAddress" placeholder="34 Park Ave, Sydney NSW 2000" /></label>
+            <label>Medicare / Patient ID<input name="patientId" placeholder="0000 00000 0" /></label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Medication</legend>
+            <label>Drug name<input name="drug" placeholder="Amoxicillin" /></label>
+            <div class="row">
+              <label>Strength<input name="strength" placeholder="500 mg" /></label>
+              <label>Form
+                <select name="form">
+                  <option value="">—</option>
+                  <option>Tablet</option>
+                  <option>Capsule</option>
+                  <option>Oral liquid</option>
+                  <option>Suspension</option>
+                  <option>Cream</option>
+                  <option>Ointment</option>
+                  <option>Injection</option>
+                  <option>Inhaler</option>
+                  <option>Drops</option>
+                  <option>Patch</option>
+                </select>
+              </label>
+            </div>
+            <div class="row">
+              <label>Dose<input name="dose" placeholder="1 tablet" /></label>
+              <label>Route
+                <select name="route">
+                  <option value="">—</option>
+                  <option>Oral (PO)</option>
+                  <option>Topical</option>
+                  <option>Intravenous (IV)</option>
+                  <option>Intramuscular (IM)</option>
+                  <option>Subcutaneous (SC)</option>
+                  <option>Inhaled</option>
+                  <option>Sublingual</option>
+                  <option>Rectal (PR)</option>
+                </select>
+              </label>
+            </div>
+            <div class="row">
+              <label>Frequency<input name="frequency" placeholder="three times a day" /></label>
+              <label>Duration<input name="duration" placeholder="7 days" /></label>
+            </div>
+            <label class="check"><input type="checkbox" name="prn" /> PRN (as required)</label>
+            <label>Indication<input name="indication" placeholder="Chest infection" /></label>
+            <div class="row">
+              <label>Quantity<input name="quantity" placeholder="21" /></label>
+              <label>Repeats / Refills<input name="repeats" placeholder="0" /></label>
+            </div>
+            <label>Additional directions
+              <textarea name="notes" rows="2" placeholder="Take with food. Complete the full course."></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Authorisation</legend>
+            <label>Date<input type="date" name="date" value={today} /></label>
+            <label class="check"><input type="checkbox" name="brandSub" /> Brand substitution permitted</label>
+          </fieldset>
+        </form>
+      </section>
+
+      <!-- ── Right: rendered prescription ─────────────────── -->
+      <section class="panel preview-panel" aria-label="Prescription preview">
+        <article id="rx" class="rx-sheet">
+          <div class="rx-head">
+            <div>
+              <strong data-bind="prescriber" class="rx-prescriber">Doctor name</strong>
+              <div data-bind="clinic" class="muted">Clinic / Practice</div>
+              <div data-bind="prescriberAddress" class="muted small">Address</div>
+              <div class="muted small">
+                <span data-bind="prescriberPhone"></span>
+                <span data-bind="providerNo" data-prefix=" · Provider "></span>
+              </div>
+            </div>
+            <div class="rx-symbol">℞</div>
+          </div>
+
+          <div class="rx-patient">
+            <div><span class="lbl">Patient</span> <span data-bind="patient">—</span></div>
+            <div>
+              <span class="lbl">DOB</span> <span data-bind="dob">—</span>
+              <span data-bind="weight" data-prefix="   Weight " data-suffix=" kg"></span>
+            </div>
+            <div data-bind="patientAddress" class="small"></div>
+            <div data-bind="patientId" data-prefix="ID " class="small"></div>
+          </div>
+
+          <div class="rx-body">
+            <div class="rx-drug">
+              <span data-bind="drug">Medication</span>
+              <span data-bind="strength" data-prefix=" "></span>
+              <span data-bind="form" data-prefix=" · "></span>
+            </div>
+            <div class="rx-sig" id="rx-sig">Sig: —</div>
+            <div class="rx-meta">
+              <span data-bind="quantity" data-prefix="Qty: " class="chip"></span>
+              <span data-bind="repeats" data-prefix="Repeats: " class="chip"></span>
+              <span data-bind="indication" data-prefix="For: " class="chip"></span>
+            </div>
+            <div data-bind="notes" class="rx-notes"></div>
+            <div data-bind="brandSubText" class="rx-brand small"></div>
+          </div>
+
+          <div class="rx-foot">
+            <div class="rx-sign">
+              <div class="sign-line"></div>
+              <span class="small muted">Signature</span>
+            </div>
+            <div class="rx-date">
+              <span class="lbl">Date</span> <span data-bind="date">—</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById("rx-form") as HTMLFormElement;
+      const sigEl = document.getElementById("rx-sig") as HTMLElement;
+
+      // Build the human-readable "Sig" (directions) line from the parts.
+      function buildSig(d: Record<string, string>): string {
+        const parts = [d.dose, d.route, d.frequency, d.prn ? "as required (PRN)" : "", d.duration ? `for ${d.duration}` : ""]
+          .map((p) => p.trim())
+          .filter(Boolean);
+        return parts.length ? "Sig: " + parts.join(" ") : "Sig: —";
+      }
+
+      function render() {
+        const fd = new FormData(form);
+        const data: Record<string, string> = {};
+        for (const [k, v] of fd.entries()) data[k] = String(v);
+        // checkboxes are absent from FormData when unchecked
+        data.prn = (form.elements.namedItem("prn") as HTMLInputElement).checked ? "1" : "";
+        const brandOn = (form.elements.namedItem("brandSub") as HTMLInputElement).checked;
+        data.brandSubText = brandOn ? "✓ Brand substitution permitted" : "";
+
+        document.querySelectorAll<HTMLElement>("[data-bind]").forEach((el) => {
+          const key = el.dataset.bind!;
+          const val = data[key] ?? "";
+          if (val) {
+            el.textContent = (el.dataset.prefix ?? "") + val + (el.dataset.suffix ?? "");
+            el.classList.remove("empty");
+          } else {
+            el.textContent = el.dataset.placeholder ?? "";
+            el.classList.toggle("empty", !el.dataset.placeholder);
+          }
+        });
+
+        sigEl.textContent = buildSig(data);
+      }
+
+      form.addEventListener("input", render);
+      document.getElementById("print-btn")!.addEventListener("click", () => window.print());
+      render();
+    </script>
+
+    <style is:global>
+      :root {
+        --ink: #1f2933;
+        --muted: #7b8794;
+        --line: #d9e2ec;
+        --bg: #f4f6f9;
+        --accent: #2563eb;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+      .topbar h1 { font-size: 1.15rem; margin: 0; }
+      button.ghost {
+        border: 1px solid var(--accent);
+        background: #fff;
+        color: var(--accent);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+      button.ghost:hover { background: var(--accent); color: #fff; }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        max-width: 1200px;
+        margin: 24px auto;
+        padding: 0 24px;
+      }
+      @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+      .panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
+      }
+
+      fieldset {
+        border: none;
+        border-top: 1px solid var(--line);
+        padding: 16px 0 4px;
+        margin: 0;
+      }
+      fieldset:first-child { border-top: none; padding-top: 0; }
+      legend {
+        font-weight: 600;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent);
+        padding: 0;
+      }
+      label { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+      label.check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ink);
+        font-size: 0.9rem;
+      }
+      label.check input { width: auto; margin: 0; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      input, select, textarea {
+        width: 100%;
+        margin-top: 4px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+      }
+      input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+
+      /* ── Prescription sheet ── */
+      .preview-panel { position: sticky; top: 24px; align-self: start; }
+      .rx-sheet {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 28px;
+        background: #fff;
+        min-height: 520px;
+        display: flex;
+        flex-direction: column;
+      }
+      .rx-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 14px;
+      }
+      .rx-prescriber { font-size: 1.15rem; }
+      .rx-symbol { font-size: 2.6rem; line-height: 1; color: var(--accent); }
+      .muted { color: var(--muted); }
+      .small { font-size: 0.82rem; }
+      .empty { color: #c3ccd6; }
+
+      .rx-patient {
+        margin: 16px 0;
+        padding: 12px 14px;
+        background: var(--bg);
+        border-radius: 8px;
+      }
+      .rx-patient .lbl, .rx-foot .lbl {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      .rx-body { flex: 1; }
+      .rx-drug { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; }
+      .rx-sig {
+        font-size: 1.05rem;
+        margin: 8px 0 14px;
+        padding-left: 12px;
+        border-left: 3px solid var(--accent);
+      }
+      .rx-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+      .chip {
+        background: #eef2ff;
+        color: var(--accent);
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+      }
+      .chip:empty { display: none; }
+      .rx-notes { font-size: 0.9rem; color: var(--ink); white-space: pre-wrap; }
+      .rx-notes:empty { display: none; }
+      .rx-brand { margin-top: 10px; color: #047857; }
+
+      .rx-foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .sign-line { width: 200px; border-bottom: 1px solid var(--ink); height: 28px; }
+
+      @media print {
+        .topbar, .form-panel { display: none; }
+        body { background: #fff; }
+        .layout { grid-template-columns: 1fr; margin: 0; padding: 0; }
+        .panel { border: none; padding: 0; }
+        .preview-panel { position: static; }
+      }
+    </style>
+  </body>
+</html>
