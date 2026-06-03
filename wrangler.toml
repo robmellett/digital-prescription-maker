@@ -1,0 +1,17 @@
+# Static Astro site served by a Cloudflare Worker via Static Assets.
+# There is no `main` Worker script — this is an "assets-only" Worker that
+# just serves the prerendered `dist/` output.
+name = "prescription-maker"
+compatibility_date = "2026-06-03"
+
+# Attach the custom domain. The `robmellett.dev` zone must already exist on the
+# same Cloudflare account — Wrangler provisions the DNS record and TLS for you.
+# (Top-level keys must precede the [assets] table, or TOML nests them under it.)
+routes = [
+  { pattern = "prescription-maker.robmellett.dev", custom_domain = true },
+]
+
+[assets]
+directory = "./dist"
+# Single HTML entry; serve index.html and fall back to it for unknown paths.
+not_found_handling = "single-page-application"
