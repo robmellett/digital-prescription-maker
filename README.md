@@ -77,4 +77,21 @@ When saving to PDF, choose **"No Margins"** in the print dialog to drop the brow
 - [React](https://react.dev) — the interactive island (one component, `client:load`)
 - Plain CSS, no framework, no nonsense
 
+---
+
+## ⚖️ Legal & responsible use
+
+A quick, genuine note (the comedy takes a break here):
+
+- This project is a **demonstration tool only**. It is **not a medical device**, not certified, and not approved by any regulatory body.
+- It does **not** create valid prescriptions. Writing or issuing a real prescription is restricted to **licensed healthcare professionals** acting within their jurisdiction. Forging, altering, or self-issuing prescriptions is **illegal** in most places and can carry serious criminal penalties.
+- Nothing here is medical advice. If you need medication or care, **see a qualified doctor or pharmacist.**
+- The authors and contributors accept **no liability** for any use, misuse, or consequences arising from this software. Provided "as is", without warranty of any kind.
+
+**Please use this responsibly.** It exists to show off a tidy form UI — not to play doctor. 🙏
+
+---
+
 Safe travels. Pack your meds in your carry-on. 🧳💊
+
+Built with <3 by [Rob Mellett](https://robmellett.com)
